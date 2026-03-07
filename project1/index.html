@@ -1,0 +1,285 @@
+
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8"/>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Mini Calculator — Sai Kumar</title>
+  <link href="https://fonts.googleapis.com/css2?family=DM+Mono:wght@300;400;500&family=Outfit:wght@400;600;700&display=swap" rel="stylesheet"/>
+  <style>
+    * { box-sizing: border-box; margin: 0; padding: 0; }
+    body {
+      min-height: 100vh;
+      display: flex; flex-direction: column;
+      align-items: center; justify-content: center;
+      background: #080810;
+      font-family: 'Outfit', sans-serif;
+      padding: 2rem;
+    }
+    body::before {
+      content: '';
+      position: fixed; inset: 0;
+      background: radial-gradient(ellipse 60% 60% at 50% 40%, rgba(0,200,255,0.06) 0%, transparent 70%);
+      pointer-events: none;
+    }
+
+    .back-link {
+      display: flex; align-items: center; gap: .5rem;
+      text-decoration: none; color: #7070a0;
+      font-size: .85rem; margin-bottom: 2rem;
+      transition: color .2s;
+    }
+    .back-link:hover { color: #00c8ff; }
+
+    .calc-wrap {
+      background: #0e0e1a;
+      border: 1px solid rgba(255,255,255,0.07);
+      border-radius: 28px;
+      padding: 1.5rem;
+      width: 100%; max-width: 360px;
+      box-shadow: 0 30px 80px rgba(0,0,0,0.6), 0 0 60px rgba(0,200,255,0.05);
+    }
+
+    /* DISPLAY */
+    .display {
+      background: #060610;
+      border: 1px solid rgba(255,255,255,0.05);
+      border-radius: 18px;
+      padding: 1.5rem 1.5rem 1rem;
+      margin-bottom: 1.2rem;
+      min-height: 110px;
+      display: flex; flex-direction: column;
+      justify-content: flex-end; align-items: flex-end;
+      overflow: hidden;
+    }
+    .display-expr {
+      font-family: 'DM Mono', monospace;
+      font-size: .8rem; color: #444466;
+      min-height: 1.2rem; margin-bottom: .4rem;
+      word-break: break-all; text-align: right;
+    }
+    .display-main {
+      font-family: 'DM Mono', monospace;
+      font-size: 2.8rem; font-weight: 500;
+      color: #eeeef5; line-height: 1;
+      word-break: break-all; text-align: right;
+      transition: font-size .1s;
+    }
+    .display-main.small { font-size: 1.8rem; }
+
+    /* BUTTONS GRID */
+    .btn-grid {
+      display: grid;
+      grid-template-columns: repeat(4, 1fr);
+      gap: .6rem;
+    }
+    .btn {
+      border: none; border-radius: 14px;
+      padding: 1.1rem .5rem;
+      font-family: 'Outfit', sans-serif;
+      font-size: 1.1rem; font-weight: 600;
+      cursor: pointer;
+      transition: transform .1s, box-shadow .15s, filter .15s;
+      user-select: none;
+    }
+    .btn:active { transform: scale(0.93); }
+
+    /* Number buttons */
+    .btn-num {
+      background: #16162a;
+      color: #eeeef5;
+      border: 1px solid rgba(255,255,255,0.06);
+    }
+    .btn-num:hover { background: #1e1e38; box-shadow: 0 4px 15px rgba(0,0,0,0.3); }
+
+    /* Operator buttons */
+    .btn-op {
+      background: rgba(0,200,255,0.1);
+      color: #00c8ff;
+      border: 1px solid rgba(0,200,255,0.2);
+    }
+    .btn-op:hover { background: rgba(0,200,255,0.18); box-shadow: 0 4px 20px rgba(0,200,255,0.15); }
+    .btn-op.active-op { background: rgba(0,200,255,0.25); border-color: rgba(0,200,255,0.5); }
+
+    /* Equals button */
+    .btn-eq {
+      background: linear-gradient(135deg, #00c8ff, #7b5ea7);
+      color: #fff;
+      border: none;
+      grid-column: span 1;
+      box-shadow: 0 4px 20px rgba(0,200,255,0.25);
+    }
+    .btn-eq:hover { box-shadow: 0 6px 30px rgba(0,200,255,0.45); filter: brightness(1.1); }
+
+    /* Special buttons */
+    .btn-clear {
+      background: rgba(255,80,80,0.12);
+      color: #ff6060;
+      border: 1px solid rgba(255,80,80,0.2);
+    }
+    .btn-clear:hover { background: rgba(255,80,80,0.2); }
+
+    .btn-del {
+      background: rgba(255,160,0,0.1);
+      color: #ffa030;
+      border: 1px solid rgba(255,160,0,0.2);
+    }
+    .btn-del:hover { background: rgba(255,160,0,0.18); }
+
+    .btn-zero { grid-column: span 2; }
+
+    .btn-pct {
+      background: rgba(123,94,167,0.12);
+      color: #a080e0;
+      border: 1px solid rgba(123,94,167,0.2);
+    }
+    .btn-pct:hover { background: rgba(123,94,167,0.22); }
+
+    /* Footer */
+    .calc-footer {
+      text-align: center; margin-top: 1.5rem;
+      font-size: .75rem; color: #333350;
+    }
+    .calc-footer a { color: #00c8ff; text-decoration: none; }
+    .calc-footer a:hover { text-decoration: underline; }
+  </style>
+</head>
+<body>
+
+<a href="https://saikumar-skm.github.io" class="back-link">← Back to Portfolio</a>
+
+<div class="calc-wrap">
+  <div class="display">
+    <div class="display-expr" id="expr"></div>
+    <div class="display-main" id="screen">0</div>
+  </div>
+  <div class="btn-grid">
+    <!-- Row 1 -->
+    <button class="btn btn-clear" onclick="clearAll()">AC</button>
+    <button class="btn btn-del" onclick="deleteLast()">⌫</button>
+    <button class="btn btn-pct" onclick="percent()">%</button>
+    <button class="btn btn-op" onclick="setOp('/')">÷</button>
+    <!-- Row 2 -->
+    <button class="btn btn-num" onclick="append('7')">7</button>
+    <button class="btn btn-num" onclick="append('8')">8</button>
+    <button class="btn btn-num" onclick="append('9')">9</button>
+    <button class="btn btn-op" onclick="setOp('*')">×</button>
+    <!-- Row 3 -->
+    <button class="btn btn-num" onclick="append('4')">4</button>
+    <button class="btn btn-num" onclick="append('5')">5</button>
+    <button class="btn btn-num" onclick="append('6')">6</button>
+    <button class="btn btn-op" onclick="setOp('-')">−</button>
+    <!-- Row 4 -->
+    <button class="btn btn-num" onclick="append('1')">1</button>
+    <button class="btn btn-num" onclick="append('2')">2</button>
+    <button class="btn btn-num" onclick="append('3')">3</button>
+    <button class="btn btn-op" onclick="setOp('+')">+</button>
+    <!-- Row 5 -->
+    <button class="btn btn-num btn-zero" onclick="append('0')">0</button>
+    <button class="btn btn-num" onclick="appendDot()">.</button>
+    <button class="btn btn-eq" onclick="calculate()">=</button>
+  </div>
+</div>
+
+<div class="calc-footer">
+  Built by <a href="https://saikumar-skm.github.io">Sai Kumar</a>
+</div>
+
+<script>
+  let current = '0';
+  let previous = '';
+  let operator = null;
+  let shouldReset = false;
+
+  const screen = document.getElementById('screen');
+  const expr = document.getElementById('expr');
+
+  function updateScreen(val) {
+    current = String(val);
+    screen.textContent = current;
+    screen.className = 'display-main' + (current.length > 10 ? ' small' : '');
+  }
+
+  function append(val) {
+    if (shouldReset) { updateScreen(val); shouldReset = false; return; }
+    if (current === '0') updateScreen(val);
+    else if (current.length < 14) updateScreen(current + val);
+    clearActiveOp();
+  }
+
+  function appendDot() {
+    if (shouldReset) { updateScreen('0.'); shouldReset = false; return; }
+    if (!current.includes('.')) updateScreen(current + '.');
+  }
+
+  function setOp(op) {
+    if (operator && !shouldReset) calculate(true);
+    previous = current;
+    operator = op;
+    shouldReset = true;
+    const opMap = { '+': '+', '-': '−', '*': '×', '/': '÷' };
+    expr.textContent = previous + ' ' + opMap[op];
+    document.querySelectorAll('.btn-op').forEach(b => b.classList.remove('active-op'));
+    event.target.classList.add('active-op');
+  }
+
+  function calculate(silent = false) {
+    if (!operator || !previous) return;
+    const a = parseFloat(previous);
+    const b = parseFloat(current);
+    let result;
+    switch (operator) {
+      case '+': result = a + b; break;
+      case '-': result = a - b; break;
+      case '*': result = a * b; break;
+      case '/': result = b === 0 ? 'Error' : a / b; break;
+    }
+    if (!silent) {
+      const opMap = { '+': '+', '-': '−', '*': '×', '/': '÷' };
+      expr.textContent = previous + ' ' + opMap[operator] + ' ' + current + ' =';
+      operator = null;
+      clearActiveOp();
+    }
+    const rounded = typeof result === 'number' ? parseFloat(result.toFixed(10)) : result;
+    updateScreen(rounded);
+    shouldReset = !silent;
+    if (!silent) previous = '';
+  }
+
+  function clearAll() {
+    updateScreen('0');
+    previous = ''; operator = null; shouldReset = false;
+    expr.textContent = '';
+    clearActiveOp();
+  }
+
+  function deleteLast() {
+    if (shouldReset || current.length <= 1) { updateScreen('0'); return; }
+    updateScreen(current.slice(0, -1) || '0');
+  }
+
+  function percent() {
+    updateScreen(parseFloat(current) / 100);
+    shouldReset = true;
+  }
+
+  function clearActiveOp() {
+    document.querySelectorAll('.btn-op').forEach(b => b.classList.remove('active-op'));
+  }
+
+  // Keyboard support
+  document.addEventListener('keydown', e => {
+    if (e.key >= '0' && e.key <= '9') append(e.key);
+    else if (e.key === '.') appendDot();
+    else if (e.key === '+') setOp('+');
+    else if (e.key === '-') setOp('-');
+    else if (e.key === '*') setOp('*');
+    else if (e.key === '/') { e.preventDefault(); setOp('/'); }
+    else if (e.key === 'Enter' || e.key === '=') calculate();
+    else if (e.key === 'Backspace') deleteLast();
+    else if (e.key === 'Escape') clearAll();
+    else if (e.key === '%') percent();
+  });
+</script>
+</body>
+</html>
