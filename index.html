@@ -1,3 +1,4 @@
+
 <!DOCTYPE html>
 <html lang="en">
 <head>
@@ -107,18 +108,75 @@
       display: flex; gap: 1rem; margin-top: 2.8rem; flex-wrap: wrap;
       animation: fadeUp .6s ease .4s both;
     }
+
+    /* BUTTONS — enhanced hover animations */
     .btn {
       display: inline-flex; align-items: center; gap: .5rem;
       padding: .85rem 1.9rem; border-radius: 10px;
       font-family: 'Cabinet Grotesk', sans-serif;
       font-weight: 700; font-size: .92rem;
       text-decoration: none; cursor: pointer; border: none;
-      transition: all .25s; letter-spacing: .02em;
+      transition: all .3s cubic-bezier(0.34, 1.56, 0.64, 1);
+      letter-spacing: .02em;
+      position: relative; overflow: hidden;
     }
-    .btn-primary { background: var(--accent); color: #000; box-shadow: 0 0 30px rgba(0,200,255,0.25); }
-    .btn-primary:hover { box-shadow: 0 0 50px rgba(0,200,255,0.5); transform: translateY(-2px); }
-    .btn-ghost { background: transparent; color: var(--text); border: 1px solid var(--border) !important; }
-    .btn-ghost:hover { background: rgba(255,255,255,0.04); border-color: rgba(255,255,255,0.15) !important; }
+    /* shimmer sweep on hover */
+    .btn::after {
+      content: '';
+      position: absolute; inset: 0;
+      background: rgba(255,255,255,0.13);
+      transform: translateX(-120%) skewX(-18deg);
+      transition: transform .45s ease;
+    }
+    .btn:hover::after { transform: translateX(220%) skewX(-18deg); }
+
+    .btn-primary {
+      background: var(--accent); color: #000;
+      box-shadow: 0 0 30px rgba(0,200,255,0.25);
+    }
+    .btn-primary:hover {
+      box-shadow: 0 0 55px rgba(0,200,255,0.6), 0 4px 20px rgba(0,200,255,0.35);
+      transform: translateY(-4px) scale(1.04);
+    }
+    .btn-primary:active { transform: translateY(-1px) scale(0.98); transition-duration: .1s; }
+
+    .btn-ghost {
+      background: transparent; color: var(--text);
+      border: 1px solid var(--border) !important;
+    }
+    .btn-ghost:hover {
+      background: rgba(0,200,255,0.07);
+      border-color: rgba(0,200,255,0.45) !important;
+      transform: translateY(-4px) scale(1.04);
+      box-shadow: 0 6px 28px rgba(0,200,255,0.15);
+      color: var(--accent);
+    }
+    .btn-ghost:active { transform: translateY(-1px) scale(0.98); transition-duration: .1s; }
+
+    /* cf-btn (contact send) */
+    .cf-btn {
+      padding: .95rem 2rem; border-radius: 10px;
+      background: linear-gradient(135deg, var(--accent), var(--accent2));
+      color: #fff;
+      font-family: 'Cabinet Grotesk', sans-serif; font-size: .93rem; font-weight: 700;
+      border: none; cursor: pointer;
+      transition: all .3s cubic-bezier(0.34, 1.56, 0.64, 1);
+      box-shadow: 0 4px 25px rgba(0,200,255,0.2);
+      position: relative; overflow: hidden;
+    }
+    .cf-btn::after {
+      content: '';
+      position: absolute; inset: 0;
+      background: rgba(255,255,255,0.13);
+      transform: translateX(-120%) skewX(-18deg);
+      transition: transform .45s ease;
+    }
+    .cf-btn:hover::after { transform: translateX(220%) skewX(-18deg); }
+    .cf-btn:hover {
+      transform: translateY(-4px) scale(1.03);
+      box-shadow: 0 8px 40px rgba(0,200,255,0.45);
+    }
+    .cf-btn:active { transform: translateY(-1px) scale(0.98); transition-duration: .1s; }
 
     .hero-scroll {
       position: absolute; bottom: 2.5rem; left: 5rem; z-index: 1;
@@ -195,20 +253,23 @@
     .edu-text h4 { font-weight: 600; font-size: .95rem; }
     .edu-text p { font-size: .82rem; color: var(--muted); margin-top: .2rem; }
 
-    /* SKILLS */
+    /* SKILLS — icon + name only, no bar or percentage */
     #skills { }
-    .skills-container { display: grid; grid-template-columns: repeat(auto-fill, minmax(200px,1fr)); gap: 1rem; }
+    .skills-container { display: grid; grid-template-columns: repeat(auto-fill, minmax(160px,1fr)); gap: 1rem; }
     .sk-card {
       background: var(--card); border: 1px solid var(--border);
-      border-radius: 16px; padding: 1.4rem 1.5rem;
-      transition: border-color .25s, transform .25s, box-shadow .25s;
+      border-radius: 16px; padding: 1.6rem 1.5rem;
+      display: flex; flex-direction: column; align-items: center; justify-content: center;
+      gap: .65rem; text-align: center;
+      transition: border-color .25s, transform .3s cubic-bezier(0.34,1.56,0.64,1), box-shadow .25s;
     }
-    .sk-card:hover { border-color: rgba(0,200,255,0.35); transform: translateY(-4px); box-shadow: 0 10px 30px rgba(0,200,255,0.08); }
-    .sk-icon { font-size: 1.9rem; margin-bottom: .7rem; }
-    .sk-name { font-weight: 600; font-size: .93rem; margin-bottom: .8rem; }
-    .sk-bar { height: 3px; background: rgba(255,255,255,0.06); border-radius: 3px; overflow: hidden; }
-    .sk-fill { height: 100%; border-radius: 3px; background: linear-gradient(to right, var(--accent), var(--accent2)); width: 0; transition: width 1.3s cubic-bezier(0.4,0,0.2,1); }
-    .sk-pct { font-size: .72rem; color: var(--muted); margin-top: .45rem; }
+    .sk-card:hover {
+      border-color: rgba(0,200,255,0.4);
+      transform: translateY(-6px) scale(1.04);
+      box-shadow: 0 12px 36px rgba(0,200,255,0.12);
+    }
+    .sk-icon { font-size: 2.2rem; }
+    .sk-name { font-weight: 600; font-size: .93rem; color: var(--text); }
 
     /* PROJECTS */
     #projects { background: var(--surface); }
@@ -259,8 +320,6 @@
     .cf input::placeholder, .cf textarea::placeholder { color: #333350; }
     .cf input:focus, .cf textarea:focus { outline: none; border-color: rgba(0,200,255,0.45); box-shadow: 0 0 0 3px rgba(0,200,255,0.08); }
     .cf textarea { min-height: 120px; }
-    .cf-btn { padding: .95rem 2rem; border-radius: 10px; background: linear-gradient(135deg, var(--accent), var(--accent2)); color: #fff; font-family: 'Cabinet Grotesk', sans-serif; font-size: .93rem; font-weight: 700; border: none; cursor: pointer; transition: opacity .2s, transform .2s, box-shadow .2s; box-shadow: 0 4px 25px rgba(0,200,255,0.2); }
-    .cf-btn:hover { opacity: .9; transform: translateY(-2px); box-shadow: 0 8px 35px rgba(0,200,255,0.4); }
 
     /* FOOTER */
     footer { padding: 2rem 5rem; border-top: 1px solid var(--border); display: flex; align-items: center; justify-content: space-between; }
@@ -374,17 +433,17 @@
   </div>
 </section>
 
-<!-- SKILLS -->
+<!-- SKILLS — icon + name only -->
 <section class="sec" id="skills">
   <div class="s-eyebrow reveal">Skills</div>
   <h2 class="s-title reveal">My <span>Tech Stack</span></h2>
   <div class="skills-container">
-    <div class="sk-card reveal" data-level="85"><div class="sk-icon">🌐</div><div class="sk-name">HTML5</div><div class="sk-bar"><div class="sk-fill"></div></div><div class="sk-pct">85%</div></div>
-    <div class="sk-card reveal" data-level="80"><div class="sk-icon">🎨</div><div class="sk-name">CSS3</div><div class="sk-bar"><div class="sk-fill"></div></div><div class="sk-pct">80%</div></div>
-    <div class="sk-card reveal" data-level="75"><div class="sk-icon">🐍</div><div class="sk-name">Python</div><div class="sk-bar"><div class="sk-fill"></div></div><div class="sk-pct">75%</div></div>
-    <div class="sk-card reveal" data-level="70"><div class="sk-icon">⚙️</div><div class="sk-name">C Programming</div><div class="sk-bar"><div class="sk-fill"></div></div><div class="sk-pct">70%</div></div>
-    <div class="sk-card reveal" data-level="72"><div class="sk-icon">🗄️</div><div class="sk-name">MySQL</div><div class="sk-bar"><div class="sk-fill"></div></div><div class="sk-pct">72%</div></div>
-    <div class="sk-card reveal" data-level="65"><div class="sk-icon">🐙</div><div class="sk-name">Git &amp; GitHub</div><div class="sk-bar"><div class="sk-fill"></div></div><div class="sk-pct">65%</div></div>
+    <div class="sk-card reveal"><div class="sk-icon">🌐</div><div class="sk-name">HTML5</div></div>
+    <div class="sk-card reveal"><div class="sk-icon">🎨</div><div class="sk-name">CSS3</div></div>
+    <div class="sk-card reveal"><div class="sk-icon">🐍</div><div class="sk-name">Python</div></div>
+    <div class="sk-card reveal"><div class="sk-icon">⚙️</div><div class="sk-name">C Programming</div></div>
+    <div class="sk-card reveal"><div class="sk-icon">🗄️</div><div class="sk-name">MySQL</div></div>
+    <div class="sk-card reveal"><div class="sk-icon">🐙</div><div class="sk-name">Git &amp; GitHub</div></div>
   </div>
 </section>
 
@@ -413,7 +472,7 @@
     </div>
     <div class="proj-card reveal">
       <div class="proj-thumb" style="background:linear-gradient(135deg,#0c0a18,#1a1030);">🧮<span class="proj-chip">C Programming</span></div>
-      <a class="proj-arrow" href="https://saikumar-skm.github.io/project1" target="_blank">↗</a>
+      <span class="proj-arrow">↗</span>
       <div class="proj-body">
         <h3>Mini Calculator App</h3>
         <p>A command-line calculator built in C that performs arithmetic, trigonometric, and logical operations.</p>
@@ -467,26 +526,16 @@
     el.addEventListener('mouseleave', () => { cur.style.width='8px'; cur.style.height='8px'; curR.style.width='32px'; curR.style.height='32px'; });
   });
 
-  // Scroll reveal + skill bars
+  // Scroll reveal
   const obs = new IntersectionObserver(entries => {
     entries.forEach((e, i) => {
       if (e.isIntersecting) {
         e.target.style.transitionDelay = (i % 4) * 0.1 + 's';
         e.target.classList.add('visible');
-        const fill = e.target.querySelector('.sk-fill');
-        const lvl = e.target.dataset.level;
-        if (fill && lvl) setTimeout(() => fill.style.width = lvl + '%', 100);
       }
     });
   }, { threshold: 0.1 });
   document.querySelectorAll('.reveal').forEach(r => obs.observe(r));
-
-  // Send message
-  function send(btn) {
-    btn.textContent = '✓ Message Sent!';
-    btn.style.background = 'linear-gradient(135deg,#00e5a0,#00b87a)';
-    setTimeout(() => { btn.textContent = 'Send Message →'; btn.style.background = ''; }, 3000);
-  }
 </script>
 </body>
 </html>
